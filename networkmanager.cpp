@@ -5,7 +5,7 @@ NetworkManager::NetworkManager(QObject *parent) : QObject(parent)
         socket = new QTcpSocket;
         connect(socket, SIGNAL(readyRead()), this, SLOT(sockReady()));
         connect(socket, SIGNAL(disconnected()), this, SLOT(sockDisc()));
-        socket->connectToHost("127.0.0.1", 5555);
+        socket->connectToHost("25.129.224.214", 5555);
 }
 
 NetworkManager::~NetworkManager()
