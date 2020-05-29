@@ -5,9 +5,9 @@ QuestionButton::QuestionButton(QPushButton *parent) : QPushButton(parent)
 
 }
 
-void QuestionButton::setDifficulty(int difficulty){
+void QuestionButton::setPrice(int price){
 
-    this->difficulty = difficulty;
+    this->price = price;
 
 }
 
@@ -15,4 +15,14 @@ void QuestionButton::setHeadingId(int headingId){
 
     this->headingId = headingId;
 
+}
+
+int QuestionButton::getPrice()
+{
+    return price;
+}
+
+int QuestionButton::getHeadingId()
+{
+    return headingId;
 }

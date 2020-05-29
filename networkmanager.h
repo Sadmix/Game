@@ -31,6 +31,10 @@ public slots:
     void sockReady();
     void sockDisc();
 
+signals:
+
+    void initGui(QJsonDocument doc);
+
 };
 
 #endif // NETWORKMANAGER_H

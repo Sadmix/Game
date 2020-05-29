@@ -32,6 +32,9 @@ private:
     QWidget *centralWidget;
     QVector<QuestionButton*> questionBtns;
     NetworkManager networkManager;
+    QVector<QLabel*> headings;
 
+public slots:
+    void initGui(QJsonDocument doc);
 };
 #endif // MAINWINDOW_H

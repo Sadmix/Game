@@ -8,10 +8,12 @@ class QuestionButton : public QPushButton
     Q_OBJECT
 public:
     explicit QuestionButton(QPushButton *parent = nullptr);
-    void setDifficulty(int difficulty);
+    void setPrice(int price);
     void setHeadingId(int headingId);
+    int getPrice();
+    int getHeadingId();
 private:
-    int difficulty;
+    int price;
     int headingId;
 signals:
 

@@ -25,14 +25,16 @@ void NetworkManager::sockReady(){
 
             if (doc.object().value("type").toString() == "connection" ){
                 if((doc.object().value("status") == "true")){
-                    // message about true connection
-                    // initialization request
+                    qDebug() << "\nConnected";
+                    Data = "{\"type\": \"initialization\"}";
+                    socket->write(Data);
                 } else {
-                    // message about false connection
+                    qDebug() << "\nFailed to connect";
                 }
             } else
 
             if (doc.object().value("type").toString() == "initialization"){
+                emit initGui(doc);
                     // update name request
                     // {"type":"updateName", "name":"some_name"}
             } else
