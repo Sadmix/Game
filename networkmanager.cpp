@@ -30,7 +30,7 @@ void NetworkManager::sockReady(){
                 emit initGui(doc);
             } else
 
-            if(doc.object().value("type").toString() == "upateName"){
+            if(doc.object().value("type").toString() == "updateName"){
                 emit setName(doc.object().value("name").toString());
             }
 
