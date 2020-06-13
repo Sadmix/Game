@@ -2,10 +2,7 @@
 
 NetworkManager::NetworkManager(QObject *parent) : QObject(parent)
 {
-        socket = new QTcpSocket;
-        connect(socket, SIGNAL(readyRead()), this, SLOT(sockReady()));
-        connect(socket, SIGNAL(disconnected()), this, SLOT(sockDisc()));
-        socket->connectToHost("25.129.224.214", 5555);
+
 }
 
 NetworkManager::~NetworkManager()
@@ -24,23 +21,17 @@ void NetworkManager::sockReady(){
         if(docErr.errorString().toInt() == QJsonParseError::NoError){
 
             if (doc.object().value("type").toString() == "connection" ){
-                if((doc.object().value("status") == "true")){
                     qDebug() << "\nConnected";
                     Data = "{\"type\": \"initialization\"}";
                     socket->write(Data);
-                } else {
-                    qDebug() << "\nFailed to connect";
-                }
             } else
 
             if (doc.object().value("type").toString() == "initialization"){
                 emit initGui(doc);
-                    // update name request
-                    // {"type":"updateName", "name":"some_name"}
             } else
 
-            if(doc.object().value("type").toString() == "name"){
-                    // update names of players
+            if(doc.object().value("type").toString() == "upateName"){
+                emit setName(doc.object().value("name").toString());
             }
 
             // some instructions
@@ -49,10 +40,22 @@ void NetworkManager::sockReady(){
             // message about parse error
         }
     }
-
 }
 
+void NetworkManager::connectToHost(QString ip){
+    socket = new QTcpSocket;
+    connect(socket, SIGNAL(readyRead()), this, SLOT(sockReady()));
+    connect(socket, SIGNAL(disconnected()), this, SLOT(sockDisc()));
+    socket->connectToHost(ip, 5555);
+}
 
 void NetworkManager::sockDisc(){
     socket->deleteLater();
+}
+
+void NetworkManager::onSendName(QString name){
+
+    Data = "{\"type\":\"regName\", \"name\":\"" + name.toUtf8() + "\"}";
+    socket->write(Data);
+
 }

@@ -8,8 +8,10 @@
 #include <QWidget>
 #include <QLabel>
 
+#include "player.h"
 #include "networkmanager.h"
 #include "questionbutton.h"
+#include "connectwindow.h"
 
 QT_BEGIN_NAMESPACE
 namespace Ui { class MainWindow; }
@@ -33,8 +35,16 @@ private:
     QVector<QuestionButton*> questionBtns;
     NetworkManager networkManager;
     QVector<QLabel*> headings;
+    QVector<Player> players;
+    ConnectWindow connectWindow;
+
 
 public slots:
     void initGui(QJsonDocument doc);
+    void showMessage();
+    void onSetName(QString name);
+
+signals:
+    void sendName(QString name);
 };
 #endif // MAINWINDOW_H

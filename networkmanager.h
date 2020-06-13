@@ -28,13 +28,16 @@ public:
 
 public slots:
 
+    void connectToHost(QString ip);
     void sockReady();
     void sockDisc();
+    void onSendName(QString name);
 
 signals:
 
     void initGui(QJsonDocument doc);
-
+    void showMessage();
+    void setName(QString name);
 };
 
 #endif // NETWORKMANAGER_H
