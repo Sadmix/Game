@@ -37,14 +37,16 @@ private:
     QVector<QLabel*> headings;
     QVector<Player> players;
     ConnectWindow connectWindow;
-
+    QString playerName;
 
 public slots:
     void initGui(QJsonDocument doc);
     void showMessage();
+    void onSetNames(QStringList names);
     void onSetName(QString name);
 
 signals:
     void sendName(QString name);
+    void initFinished();
 };
 #endif // MAINWINDOW_H

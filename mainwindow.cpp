@@ -8,8 +8,9 @@ MainWindow::MainWindow(QWidget *parent)
     ui->setupUi(this);
     connect(&networkManager, SIGNAL(initGui(QJsonDocument)), this, SLOT(initGui(QJsonDocument)));
     connect(&networkManager, SIGNAL(showMessage()), &connectWindow, SLOT(showMessage()));
-    connect(&networkManager, SIGNAL(setName(QString)), this, SLOT(onSetName(QString)));
+    connect(&networkManager, SIGNAL(setNames(QStringList)), this, SLOT(onSetNames(QStringList)));
     connect(&connectWindow, SIGNAL(closeApp()), this, SLOT(close()));
+    connect(this, SIGNAL(initFinished()), &networkManager, SLOT(onInitFinished()));
     connect(&connectWindow, SIGNAL(connectToHost(QString)), &networkManager, SLOT(connectToHost(QString)));
     connect(&connectWindow, SIGNAL(setName(QString)), this, SLOT(onSetName(QString)));
     connect(this, SIGNAL(sendName(QString)), &networkManager, SLOT(onSendName(QString)));
@@ -63,16 +64,34 @@ void MainWindow::initGui(QJsonDocument doc)
     }
     this->show();
     connectWindow.close();
-    emit sendName(players[0].getName());
+    emit sendName(playerName);
 }
 
 void MainWindow::showMessage(){
     QMessageBox::information(this, "Error", "Failed to connect");
 }
 
+void MainWindow::onSetNames(QStringList names){
+    int i = 0;
+    qDebug() << players.size() << names.size() << names;
+    while(i < players.size() && i < names.size()){
+        players[i].setName(names[i]);
+        i++;
+    }
+    if(players.size() < names.size()){
+        while(i < names.size()){
+            Player player;
+            player.setName(names[i]);
+            players.append(player);
+            playersLayout->addLayout(player.getLayout());
+            i++;
+        }
+    }
+    if(names.size() == 3){
+        emit initFinished();
+    }
+}
+
 void MainWindow::onSetName(QString name){
-    Player thisPlayer;
-    thisPlayer.setName(name);
-    players.append(thisPlayer);
-    playersLayout->addLayout(thisPlayer.getLayout());
+    playerName = name;
 }

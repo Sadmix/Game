@@ -8,6 +8,7 @@
 #include <QMessageBox>
 #include <QJsonDocument>
 #include <QJsonObject>
+#include <QJsonArray>
 #include <QJsonParseError>
 
 #include <QDebug>
@@ -32,12 +33,13 @@ public slots:
     void sockReady();
     void sockDisc();
     void onSendName(QString name);
+    void onInitFinished();
 
 signals:
 
     void initGui(QJsonDocument doc);
     void showMessage();
-    void setName(QString name);
+    void setNames(QStringList names);
 };
 
 #endif // NETWORKMANAGER_H

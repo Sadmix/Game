@@ -30,14 +30,18 @@ void NetworkManager::sockReady(){
                 emit initGui(doc);
             } else
 
-            if(doc.object().value("type").toString() == "updateName"){
-                emit setName(doc.object().value("name").toString());
-                Data = "{\"type\":\"initialization\", \"status\":\"finished\"}";
-                socket->write(Data);
+            if(doc.object().value("type").toString() == "updateNames"){
+                QStringList names;
+                QJsonArray arr = doc.object().value("names").toArray();
+                for(auto obj : arr){
+                    names.push_back(obj.toObject().value("name").toString());
+                }
+                qDebug() << doc.object().value("names").toArray();
+                emit setNames(names);
             }
             else if(doc.object().value("type").toString() == "game"){
                 if (doc.object().value("status").toString() == "start"){
-                    qDebug() << "started";
+                    QMessageBox::information(nullptr, "Game", "Game started");
                 }
             }
 
@@ -63,4 +67,9 @@ void NetworkManager::onSendName(QString name){
     Data = "{\"type\":\"regName\", \"name\":\"" + name.toUtf8() + "\"}";
     socket->write(Data);
 
+}
+
+void NetworkManager::onInitFinished(){
+     Data = "{\"type\":\"initialization\", \"status\":\"finished\"}";
+     socket->write(Data);
 }

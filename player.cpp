@@ -31,3 +31,4 @@ void Player::setPoints(QString points){
 QVBoxLayout* Player::getLayout(){
     return layout;
 }
+
