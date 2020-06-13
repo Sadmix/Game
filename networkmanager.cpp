@@ -22,7 +22,7 @@ void NetworkManager::sockReady(){
 
             if (doc.object().value("type").toString() == "connection" ){
                     qDebug() << "\nConnected";
-                    Data = "{\"type\": \"initialization\"}";
+                    Data = "{\"type\": \"initialization\", \"status\":\"start\"}";
                     socket->write(Data);
             } else
 
@@ -30,11 +30,16 @@ void NetworkManager::sockReady(){
                 emit initGui(doc);
             } else
 
-            if(doc.object().value("type").toString() == "upateName"){
+            if(doc.object().value("type").toString() == "updateName"){
                 emit setName(doc.object().value("name").toString());
+                Data = "{\"type\":\"initialization\", \"status\":\"finished\"}";
+                socket->write(Data);
             }
-
-            // some instructions
+            else if(doc.object().value("type").toString() == "game"){
+                if (doc.object().value("status").toString() == "start"){
+                    qDebug() << "started";
+                }
+            }
 
         } else {
             // message about parse error

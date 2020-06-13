@@ -71,7 +71,6 @@ void MainWindow::showMessage(){
 }
 
 void MainWindow::onSetName(QString name){
-    qDebug() << "123";
     Player thisPlayer;
     thisPlayer.setName(name);
     players.append(thisPlayer);
