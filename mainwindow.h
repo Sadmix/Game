@@ -28,25 +28,37 @@ public:
 private:
     Ui::MainWindow *ui;
     QVBoxLayout *mainLayout;
-    QGridLayout *questionsLayout;
+    QVBoxLayout *questionLayout;
+    QGridLayout *buttonsLayout;
     QHBoxLayout *playersLayout;
     QPushButton *answerBtn;
     QWidget *centralWidget;
+    QWidget *questionWidget;
     QVector<QuestionButton*> questionBtns;
     NetworkManager networkManager;
     QVector<QLabel*> headings;
     QVector<Player> players;
     ConnectWindow connectWindow;
     QString playerName;
+    QLabel *questText;
+
+    bool btnsActive;
+
+    void connectButtons();
 
 public slots:
+    void onChoosePlayer(QString name);
     void initGui(QJsonDocument doc);
     void showMessage();
     void onSetNames(QStringList names);
     void onSetName(QString name);
+    void onQuestionButtonClicked();
+    void onShowText(QString questText);
 
 signals:
+
     void sendName(QString name);
     void initFinished();
+    void chooseQuestion(int price, int headingId);
 };
 #endif // MAINWINDOW_H

@@ -22,7 +22,7 @@ void NetworkManager::sockReady(){
 
             if (doc.object().value("type").toString() == "connection" ){
                     qDebug() << "\nConnected";
-                    Data = "{\"type\": \"initialization\", \"status\":\"start\"}";
+                    Data = "{\"type\": \"initialization\", \"operation\":\"start\"}";
                     socket->write(Data);
             } else
 
@@ -36,13 +36,17 @@ void NetworkManager::sockReady(){
                 for(auto obj : arr){
                     names.push_back(obj.toObject().value("name").toString());
                 }
-                qDebug() << doc.object().value("names").toArray();
                 emit setNames(names);
             }
             else if(doc.object().value("type").toString() == "game"){
-                if (doc.object().value("status").toString() == "start"){
+                if (doc.object().value("operation").toString() == "start"){
                     QMessageBox::information(nullptr, "Game", "Game started");
+                    QString name = doc.object().value("name").toString(); // {"type":"game", "operation":"choosePlayer", "name":"..."}
+                    emit choosePlayer(name);
                 }
+            }
+            else if(doc.object().value("type").toString() == "questionText"){
+                emit showText(doc.object().value("value").toString());
             }
 
         } else {
@@ -70,6 +74,12 @@ void NetworkManager::onSendName(QString name){
 }
 
 void NetworkManager::onInitFinished(){
-     Data = "{\"type\":\"initialization\", \"status\":\"finished\"}";
+     Data = "{\"type\":\"initialization\", \"operation\":\"finish\"}";
      socket->write(Data);
 }
+
+void NetworkManager::onChooseQuestion(int price, int headingId){
+    Data = "{\"type\":\"chooseQuestion\", \"price\":\""+QString::number(price).toUtf8()+"\", \"headingId\":\"" + QString::number(headingId).toUtf8() + "\"}";
+    socket->write(Data);
+}
+

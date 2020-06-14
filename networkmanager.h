@@ -34,9 +34,12 @@ public slots:
     void sockDisc();
     void onSendName(QString name);
     void onInitFinished();
+    void onChooseQuestion(int price, int headingId);
 
 signals:
 
+    void showText(QString questText);
+    void choosePlayer(QString name);
     void initGui(QJsonDocument doc);
     void showMessage();
     void setNames(QStringList names);

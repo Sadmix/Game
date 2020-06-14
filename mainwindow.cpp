@@ -5,6 +5,7 @@ MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
     , ui(new Ui::MainWindow)
 {
+    btnsActive = false;
     ui->setupUi(this);
     connect(&networkManager, SIGNAL(initGui(QJsonDocument)), this, SLOT(initGui(QJsonDocument)));
     connect(&networkManager, SIGNAL(showMessage()), &connectWindow, SLOT(showMessage()));
@@ -14,20 +15,31 @@ MainWindow::MainWindow(QWidget *parent)
     connect(&connectWindow, SIGNAL(connectToHost(QString)), &networkManager, SLOT(connectToHost(QString)));
     connect(&connectWindow, SIGNAL(setName(QString)), this, SLOT(onSetName(QString)));
     connect(this, SIGNAL(sendName(QString)), &networkManager, SLOT(onSendName(QString)));
+    connect(&networkManager, SIGNAL(choosePlayer(QString)), this, SLOT(onChoosePlayer(QString)));
+    connect(this, SIGNAL(chooseQuestion(int, int)), &networkManager, SLOT(onChooseQuestion(int, int)));
+    connect(&networkManager, SIGNAL(showText(QString)), this, SLOT(onShowText(QString)));
 
     centralWidget = new QWidget;
+    questionWidget = new QWidget;
     mainLayout = new QVBoxLayout;
-    questionsLayout = new QGridLayout;
+    questionLayout = new QVBoxLayout;
+    buttonsLayout = new QGridLayout;
     playersLayout = new QHBoxLayout;
     answerBtn  = new QPushButton;
+    questText = new QLabel;
+
     connectWindow.setWindowTitle("Connect to server");
     connectWindow.show();
 
     setCentralWidget(centralWidget);
     centralWidget->setLayout(mainLayout);
+    questionWidget->setLayout(questionLayout);
+
     mainLayout->addLayout(playersLayout, 0);
-    mainLayout->addLayout(questionsLayout, 1);
-    mainLayout->addWidget(answerBtn, 2);
+    mainLayout->addLayout(buttonsLayout, 1);
+
+    questionLayout->addWidget(questText, 0);
+    questionLayout->addWidget(answerBtn, 1);
 
     for(int i = 1; i < 6; i++){
         for(int j = 1; j < 6; j++){
@@ -35,18 +47,29 @@ MainWindow::MainWindow(QWidget *parent)
             btn->setHeadingId(i);
             btn->setPrice(j);
             btn->setMinimumSize(100, 100);
-            questionsLayout->addWidget(btn, i, j+1);
+            btn->setEnabled(btnsActive);
+            buttonsLayout->addWidget(btn, i, j+1);
             questionBtns.push_back(btn);
         }
     }
+
+    connectButtons();
 
     for(int i = 1; i < 6; i++){
         QLabel *label = new QLabel;
         label->setAlignment(Qt::AlignCenter);
         label->setText("Heading №" + QString::number(i));
-        questionsLayout->addWidget(label, i, 0);
+        buttonsLayout->addWidget(label, i, 0);
         headings.push_back(label);
     }
+
+    questText->setAlignment(Qt::AlignCenter);
+    QFont font;
+    font.setPixelSize(30);
+    questText->setFont(font);
+
+    answerBtn->setMinimumHeight(100);
+
 }
 
 MainWindow::~MainWindow()
@@ -73,7 +96,6 @@ void MainWindow::showMessage(){
 
 void MainWindow::onSetNames(QStringList names){
     int i = 0;
-    qDebug() << players.size() << names.size() << names;
     while(i < players.size() && i < names.size()){
         players[i].setName(names[i]);
         i++;
@@ -94,4 +116,30 @@ void MainWindow::onSetNames(QStringList names){
 
 void MainWindow::onSetName(QString name){
     playerName = name;
+}
+
+void MainWindow::onChoosePlayer(QString name){
+    if (name == playerName){
+        btnsActive = true;
+        for (auto btn : questionBtns){
+            btn->setEnabled(btnsActive);
+        }
+    }
+}
+
+void MainWindow::onQuestionButtonClicked(){
+    QuestionButton *btn = (QuestionButton*)sender();
+    qDebug() << btn->getPrice() << btn->getHeadingId();
+    emit chooseQuestion(btn->getPrice(), btn->getHeadingId());
+}
+
+void MainWindow::connectButtons(){
+    for (auto btn : questionBtns){
+        connect(btn, SIGNAL(clicked()), this, SLOT(onQuestionButtonClicked()));
+    }
+}
+
+void MainWindow::onShowText(QString questText){
+   this->questText->setText(questText);
+   setCentralWidget(questionWidget);
 }
