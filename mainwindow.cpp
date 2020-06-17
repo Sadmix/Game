@@ -177,6 +177,7 @@ void MainWindow::onNextQuestion(QString name){
 void MainWindow::onRemoveBtn(int price, int headingId){
     for(auto btn : questionBtns){
         if(btn->getPrice() == price && btn->getHeadingId() == headingId){
+            questionBtns.remove(questionBtns.indexOf(btn));
             delete btn;
         }
     }
