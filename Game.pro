@@ -31,8 +31,7 @@ HEADERS += \
     questionbutton.h
 
 FORMS += \
-    connectwindow.ui \
-    mainwindow.ui
+    connectwindow.ui
 
 # Default rules for deployment.
 qnx: target.path = /tmp/$${TARGET}/bin

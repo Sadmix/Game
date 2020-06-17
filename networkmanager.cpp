@@ -17,7 +17,7 @@ void NetworkManager::sockReady(){
         Data = socket->readAll();
 
         doc = QJsonDocument::fromJson(Data, &docErr);
-
+        qDebug() << doc;
         if(docErr.errorString().toInt() == QJsonParseError::NoError){
 
             if (doc.object().value("type").toString() == "connection" ){
@@ -44,13 +44,24 @@ void NetworkManager::sockReady(){
                     QString name = doc.object().value("name").toString(); // {"type":"game", "operation":"choosePlayer", "name":"..."}
                     emit choosePlayer(name);
                 }
+                if (doc.object().value("operation").toString() == "blockButtons"){
+                    emit blockButton(true);
+                }
+                if (doc.object().value("operation").toString() == "unblockButton"){
+                    emit blockButton(false);
+                }
+                if (doc.object().value("operation").toString() == "updatePoints"){
+                    emit updatePoints(doc.object().value("player").toString(),doc.object().value("points").toString(), doc.object().value("next").toBool());
+                }
             }
             else if(doc.object().value("type").toString() == "questionText"){
                 emit showText(doc.object().value("value").toString());
+                emit removeBtn(doc.object().value("price").toInt(), doc.object().value("headingId").toInt());
             }
 
+
         } else {
-            // message about parse error
+            qDebug() << docErr.error;
         }
     }
 }
@@ -80,6 +91,11 @@ void NetworkManager::onInitFinished(){
 
 void NetworkManager::onChooseQuestion(int price, int headingId){
     Data = "{\"type\":\"chooseQuestion\", \"price\":\""+QString::number(price).toUtf8()+"\", \"headingId\":\"" + QString::number(headingId).toUtf8() + "\"}";
+    socket->write(Data);
+}
+
+void NetworkManager::sendAnswer(){
+    Data = "{\"type\":\"answer\"}";
     socket->write(Data);
 }
 

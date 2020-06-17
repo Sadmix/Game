@@ -3,10 +3,19 @@
 
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
-    , ui(new Ui::MainWindow)
+
 {
     btnsActive = false;
-    ui->setupUi(this);
+
+    centralWidget = new QWidget;
+    questionWidget = new QWidget;
+    mainLayout = new QVBoxLayout;
+    questionLayout = new QVBoxLayout;
+    buttonsLayout = new QGridLayout;
+    playersLayout = new QHBoxLayout;
+    answerBtn  = new QPushButton;
+    questText = new QLabel;
+
     connect(&networkManager, SIGNAL(initGui(QJsonDocument)), this, SLOT(initGui(QJsonDocument)));
     connect(&networkManager, SIGNAL(showMessage()), &connectWindow, SLOT(showMessage()));
     connect(&networkManager, SIGNAL(setNames(QStringList)), this, SLOT(onSetNames(QStringList)));
@@ -18,15 +27,10 @@ MainWindow::MainWindow(QWidget *parent)
     connect(&networkManager, SIGNAL(choosePlayer(QString)), this, SLOT(onChoosePlayer(QString)));
     connect(this, SIGNAL(chooseQuestion(int, int)), &networkManager, SLOT(onChooseQuestion(int, int)));
     connect(&networkManager, SIGNAL(showText(QString)), this, SLOT(onShowText(QString)));
-
-    centralWidget = new QWidget;
-    questionWidget = new QWidget;
-    mainLayout = new QVBoxLayout;
-    questionLayout = new QVBoxLayout;
-    buttonsLayout = new QGridLayout;
-    playersLayout = new QHBoxLayout;
-    answerBtn  = new QPushButton;
-    questText = new QLabel;
+    connect(answerBtn, SIGNAL(clicked()), &networkManager, SLOT(sendAnswer()));
+    connect(&networkManager, SIGNAL(blockButton(bool)), this, SLOT(onBlockButton(bool)));
+    connect(&networkManager, SIGNAL(updatePoints(QString, QString, bool)), this, SLOT(onUpdatePoints(QString, QString, bool)));
+    connect(&networkManager, SIGNAL(removeBtn(int, int)), this, SLOT(onRemoveBtn(int, int)));
 
     connectWindow.setWindowTitle("Connect to server");
     connectWindow.show();
@@ -74,7 +78,7 @@ MainWindow::MainWindow(QWidget *parent)
 
 MainWindow::~MainWindow()
 {
-    delete ui;
+
 }
 
 void MainWindow::initGui(QJsonDocument doc)
@@ -120,17 +124,20 @@ void MainWindow::onSetName(QString name){
 
 void MainWindow::onChoosePlayer(QString name){
     if (name == playerName){
-        btnsActive = true;
         for (auto btn : questionBtns){
-            btn->setEnabled(btnsActive);
+            btn->setEnabled(true);
+        }
+    } else {
+        for(auto btn : questionBtns){
+            btn->setEnabled(false);
         }
     }
 }
 
 void MainWindow::onQuestionButtonClicked(){
     QuestionButton *btn = (QuestionButton*)sender();
-    qDebug() << btn->getPrice() << btn->getHeadingId();
     emit chooseQuestion(btn->getPrice(), btn->getHeadingId());
+
 }
 
 void MainWindow::connectButtons(){
@@ -140,6 +147,37 @@ void MainWindow::connectButtons(){
 }
 
 void MainWindow::onShowText(QString questText){
-   this->questText->setText(questText);
-   setCentralWidget(questionWidget);
+    this->questText->setText(questText);
+    centralWidget = takeCentralWidget();
+    setCentralWidget(questionWidget);
+}
+
+void MainWindow::onBlockButton(bool check){
+    answerBtn->setEnabled(!check);
+}
+
+void MainWindow::onUpdatePoints(QString name, QString points, bool next){
+    for(auto p : players){
+        if (p.getName() == name){
+            p.setPoints(points);
+        }
+    }
+    if (next){
+        onNextQuestion(name);
+    }
+    answerBtn->setEnabled(true);
+}
+
+void MainWindow::onNextQuestion(QString name){
+    questionWidget = takeCentralWidget();
+    setCentralWidget(centralWidget);
+    onChoosePlayer(name);
+}
+
+void MainWindow::onRemoveBtn(int price, int headingId){
+    for(auto btn : questionBtns){
+        if(btn->getPrice() == price && btn->getHeadingId() == headingId){
+            delete btn;
+        }
+    }
 }

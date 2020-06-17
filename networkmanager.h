@@ -29,6 +29,7 @@ public:
 
 public slots:
 
+    void sendAnswer();
     void connectToHost(QString ip);
     void sockReady();
     void sockDisc();
@@ -38,6 +39,9 @@ public slots:
 
 signals:
 
+    void removeBtn(int price, int headingId);
+    void updatePoints(QString name, QString points, bool next);
+    void blockButton(bool check);
     void showText(QString questText);
     void choosePlayer(QString name);
     void initGui(QJsonDocument doc);

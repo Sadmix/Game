@@ -7,6 +7,7 @@
 class Player
 {
 public:
+
     Player();
     QString getName();
     void setName(QString name);
@@ -15,9 +16,11 @@ public:
     QVBoxLayout *getLayout();
 
 private:
+
     QLabel *nameLabel;
     QLabel *pointsLabel;
     QVBoxLayout *layout;
+
 };
 
 #endif // PLAYER_H

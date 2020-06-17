@@ -1,5 +1,5 @@
 #include "player.h"
-
+#include <QDebug>
 Player::Player()
 {
     layout = new QVBoxLayout;

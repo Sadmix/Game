@@ -26,7 +26,7 @@ public:
     ~MainWindow();
 
 private:
-    Ui::MainWindow *ui;
+
     QVBoxLayout *mainLayout;
     QVBoxLayout *questionLayout;
     QGridLayout *buttonsLayout;
@@ -34,6 +34,7 @@ private:
     QPushButton *answerBtn;
     QWidget *centralWidget;
     QWidget *questionWidget;
+    QWidget tmpWidget;
     QVector<QuestionButton*> questionBtns;
     NetworkManager networkManager;
     QVector<QLabel*> headings;
@@ -47,6 +48,10 @@ private:
     void connectButtons();
 
 public slots:
+
+    void onRemoveBtn(int price, int headingId);
+    void onNextQuestion(QString name);
+    void onUpdatePoints(QString name, QString points, bool next);
     void onChoosePlayer(QString name);
     void initGui(QJsonDocument doc);
     void showMessage();
@@ -54,6 +59,7 @@ public slots:
     void onSetName(QString name);
     void onQuestionButtonClicked();
     void onShowText(QString questText);
+    void onBlockButton(bool check);
 
 signals:
 
